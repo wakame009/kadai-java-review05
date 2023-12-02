@@ -1,82 +1,58 @@
 package person;
 
+//IO
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+// SQL
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-
 public class Review05 {
-
+    
     public static void main(String[] args) {
-
-        // 3. データベース接続と結果取得のための変数宣言
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        try {
-        // 1. ドライバのクラスをJava上で読み込む
-            Class.forName("com.mysql.cj.jdbc.Driver");
         
-        // 2. DBと接続する
+        try {
+            // ドライバのクラスをJava上で読み込む
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // DBと接続する
             con = DriverManager.getConnection(
                     "jdbc:mysql://localhost/kadaidb?useSSL=false&allowPublicKeyRetrieval=true",
                     "root",
                     "wakame219"
-                );
-
-         // 4. DBとやりとりする窓口（Statementオブジェクト）の作成
-            pstmt = con.prepareStatement("select * from person");
-            rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-              System.out.print("検索キーワードを入力してください > ");
-              System.out.println(rs.getString("name"));
-              System.out.println(rs.getInt("age"));
-              
-            //String sql = "SELECT * FROM person WHERE Name = ?";    
-            //pstmt = con.prepareStatement("select * from person");
-            //rs = pstmt.executeQuery();
-            // 5, 6. Select文の実行と結果を格納／代入
-            //System.out.print("検索キーワードを入力してください > ");
-            //String num1 = keyIn();
-         //PreparedStatement ipstmt;
-            //String str1;
-            // 入力されたPopulationとCountryCodeをPreparedStatementオブジェクトにセット
-            //ipstmt.setString(1, str1);
-           
-         // update処理の実行および更新された行数を取得
-            //int count = ipstmt.executeUpdate();
-            //System.out.println("更新行数：" + count);
-            //String input = keyIn();
-         // PreparedStatementオブジェクトの?に値をセット  
-            //pstmt.setString(1, input); 
-
-            rs = pstmt.executeQuery();  
-            System.out.println(rs.getString("name"));
-            System.out.println(rs.getInt("age"));
-            }
-        }
-            // 7. 結果を表示する
-            //while( rs.next() ){
-                // Name列の値を取得
-                //String name = rs.getString("Name");
-             // Population列の値を取得 
-                //int population = rs.getInt("Population");
-
-                // 取得した値を表示
-                //System.out.println(name);
-                //System.out.println(population);
-                //System.out.println(rs.getInt("age"));
-                // 取得した値を表示
-                //System.out.println(name);
+            );
             
-        catch (ClassNotFoundException e) {
+            // DBとやりとりする窓口（PreparedStatementオブジェクト）の作成
+            // 検索用SQLおよび検索用PreparedStatementオブジェクトを取得
+            String selectSql = "SELECT * FROM person WHERE id = ?";
+            pstmt = con.prepareStatement(selectSql);
+
+            // 検索キーワードの入力
+            System.out.print("検索キーワードを入力してください > ");
+            int num1 = keyInNum();
+            
+            // 入力されたidをPreparedStatementオブジェクトにセット
+            pstmt.setInt(1, num1);
+            
+            // Query実行結果の格納
+            rs = pstmt.executeQuery();
+            
+            // 結果の出力
+            while(rs.next()) {
+                String name = rs.getString("name");
+                int age = rs.getInt("age");
+                System.out.println(name + "\t" + age);
+            }
+            
+        } catch (ClassNotFoundException e) {
             System.err.println("JDBCドライバのロードに失敗しました。");
             e.printStackTrace();
         } catch (SQLException e) {
@@ -84,7 +60,7 @@ public class Review05 {
             e.printStackTrace();
         } finally {
             // 8. 接続を閉じる
-            if( rs != null ){
+            if (rs != null) {
                 try {
                     rs.close();
                 } catch (SQLException e) {
@@ -92,15 +68,15 @@ public class Review05 {
                     e.printStackTrace();
                 }
             }
-            if( pstmt != null ){
+            if (pstmt != null) {
                 try {
                     pstmt.close();
                 } catch (SQLException e) {
-                    System.err.println("Statementを閉じるときにエラーが発生しました。");
+                    System.err.println("PreparedStatementを閉じるときにエラーが発生しました。");
                     e.printStackTrace();
                 }
             }
-            if(con != null) {
+            if (con != null) {
                 try {
                     con.close();
                 } catch (SQLException e) {
@@ -110,7 +86,7 @@ public class Review05 {
             }
         }
     }
-
+    
     /*
      * キーボードから入力された値をStringで返す 引数：なし 戻り値：入力された文字列
      */
@@ -120,9 +96,106 @@ public class Review05 {
             BufferedReader key = new BufferedReader(new InputStreamReader(System.in));
             line = key.readLine();
         } catch (IOException e) {
-
         }
         return line;
     }
-
-}
+    
+    /*
+     * キーボードから入力された値をintで返す 引数：なし 戻り値：int
+     */
+    private static int keyInNum() {
+        int result = 0;
+        try {
+            result = Integer.parseInt(keyIn());
+        } catch (NumberFormatException e) {
+        }
+        return result;
+    }    
+    
+}    
+    
+//    
+//    
+//    public static void main(String[] args) {
+//    
+//        // Keyboard入力
+//        InputStreamReader isr = new InputStreamReader(System.in);
+//        BufferedReader br = new BufferedReader(isr);
+//        
+//        System.out.print("検索キーワードを入力してください > ");
+//        
+//        String input = null;
+//        try {
+//            input = br.readLine();
+//            br.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        
+//        // DB接続
+//        Connection con = null;
+//        PreparedStatement pstmt = null;
+//        ResultSet rs = null;
+//    
+//        try {
+//            // 1. ドライバのクラスをJava上で読み込む
+//            // Class.forName("com.mysql.cj.jdbc.Driver");
+//            
+//            // 2. DBと接続する
+//            con = DriverManager.getConnection(
+//                "jdbc:mysql://localhost/kadaidb?useSSL=false&allowPublicKeyRetrieval=true",
+//                "root",
+//                "wakame219"
+//            );
+//            
+//            // 4. DBとやりとりする窓口（Statementオブジェクト）の作成
+//            //String sql = "SELECT name, age FROM person WHERE id = '\" + input + \"'";
+//            String insertSql = "SELECT * FROM person WHERE id = ?";
+//            pstmt = con.prepareStatement(insertSql);
+//            pstmt.setInt(1, input);
+//            // 更新するCountryCodeを入力
+////          System.out.print("検索キーワードを入力してください > ");
+////          String num1 = keyIn();
+//            
+//            
+//            
+//            pstmt = con.prepareStatement(sql);
+//            rs = pstmt.executeQuery();
+//    
+//            while (rs.next()) {
+//                System.out.println(rs.getString("name"));
+//                System.out.println(rs.getInt("age"));
+//            }
+//    
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (rs != null) {
+//                try {
+//                    rs.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            if (pstmt != null) {
+//                try {
+//                    pstmt.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            if (con != null) {
+//                try {
+//                    con.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    }
+//
+////    private static String keyIn() {
+////        // TODO 自動生成されたメソッド・スタブ
+////        return null;
+////    }
+//}
