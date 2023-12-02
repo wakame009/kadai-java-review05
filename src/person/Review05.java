@@ -31,32 +31,52 @@ public class Review05 {
                 );
 
          // 4. DBとやりとりする窓口（Statementオブジェクト）の作成
-            //String sql = "SELECT * FROM person WHERE Name = ?";    
             pstmt = con.prepareStatement("select * from person");
             rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+              System.out.print("検索キーワードを入力してください > ");
+              System.out.println(rs.getString("name"));
+              System.out.println(rs.getInt("age"));
+              
+            //String sql = "SELECT * FROM person WHERE Name = ?";    
+            //pstmt = con.prepareStatement("select * from person");
+            //rs = pstmt.executeQuery();
             // 5, 6. Select文の実行と結果を格納／代入
-            System.out.print("検索キーワードを入力してください > ");
-            String input = keyIn();
+            //System.out.print("検索キーワードを入力してください > ");
+            //String num1 = keyIn();
+         //PreparedStatement ipstmt;
+            //String str1;
+            // 入力されたPopulationとCountryCodeをPreparedStatementオブジェクトにセット
+            //ipstmt.setString(1, str1);
+           
+         // update処理の実行および更新された行数を取得
+            //int count = ipstmt.executeUpdate();
+            //System.out.println("更新行数：" + count);
+            //String input = keyIn();
          // PreparedStatementオブジェクトの?に値をセット  
-            pstmt.setString(1, input); 
+            //pstmt.setString(1, input); 
 
             rs = pstmt.executeQuery();  
-            
+            System.out.println(rs.getString("name"));
+            System.out.println(rs.getInt("age"));
+            }
+        }
             // 7. 結果を表示する
-            while( rs.next() ){
+            //while( rs.next() ){
                 // Name列の値を取得
-                String name = rs.getString("Name");
+                //String name = rs.getString("Name");
              // Population列の値を取得 
-                int population = rs.getInt("Population");
+                //int population = rs.getInt("Population");
 
                 // 取得した値を表示
-                System.out.println(name);
-                System.out.println(population);
+                //System.out.println(name);
+                //System.out.println(population);
                 //System.out.println(rs.getInt("age"));
                 // 取得した値を表示
                 //System.out.println(name);
-            }
-        } catch (ClassNotFoundException e) {
+            
+        catch (ClassNotFoundException e) {
             System.err.println("JDBCドライバのロードに失敗しました。");
             e.printStackTrace();
         } catch (SQLException e) {
